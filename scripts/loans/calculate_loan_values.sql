@@ -29,7 +29,7 @@ begin
 	
 		update open_ended_loans
 		set interest_amount_paid = v_interest_amount_paid, principal_amount_paid = v_principal_amount_paid
-		where id = v_loan_id;
+		where loan_id = v_loan_id;
 	
 		insert into log (origin, message) values ('calculate_loan_values', 'v_interest_amount_paid:' || v_interest_amount_paid);
 		insert into log (origin, message) values ('calculate_loan_values', 'v_principal_amount_paid:' || v_principal_amount_paid);
