@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION undelete_client(v_client_id UUID)
 RETURNS void AS $$
 begin
-	insert into log (origin, message) values ('undelete_client', 'start');
-	insert into log (origin, message) values ('v_client_id', v_client_id);
+	perform create_debug_log_entry('undelete_client', 'start');
+	perform create_debug_log_entry('undelete_client', 'v_client_id: ' || v_client_id);
 
 	update clients
 	set delete_date = null, delete_reason = null, payment_status = 'unknown'
@@ -10,10 +10,10 @@ begin
 
 	perform calculate_client_values(v_client_id);
 
-
-	insert into log (origin, message) values ('undelete_client', 'end');
+	perform create_debug_log_entry('undelete_client', 'end');
 EXCEPTION
     WHEN OTHERS THEN
+		perform create_exception_log_entry('undelete_client', SQLERRM);
         RAISE EXCEPTION 'undelete_client - ERROR: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;

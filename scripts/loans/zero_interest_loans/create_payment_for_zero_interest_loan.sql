@@ -7,7 +7,7 @@ declare
 	v_remaining_principal_amount float8;
 	v_payment_status text;
 begin
-	insert into log (origin, message) values ('create_payment_for_zero_interest_loan', 'start');
+	perform create_debug_log_entry('create_payment_for_zero_interest_loan', 'start');
 
 	-- Declare variables
 	select initial_principal_amount, expected_pay_date 
@@ -22,10 +22,10 @@ begin
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
 
-	insert into log (origin, message) values ('create_payment_for_zero_interest_loan', 'end');	
-
+	perform create_debug_log_entry('create_payment_for_zero_interest_loan', 'end');
 EXCEPTION
 	WHEN OTHERS THEN
+		perform create_exception_log_entry('create_payment_for_zero_interest_loan', SQLERRM);
     	RAISE EXCEPTION 'create_payment_for_zero_interest_loan - ERROR: %', SQLERRM;
 end;
 $$ LANGUAGE plpgsql;

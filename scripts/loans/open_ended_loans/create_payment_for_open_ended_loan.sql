@@ -4,7 +4,7 @@ declare
 	v_total_interest_amount_paid float8;
 	v_total_principal_amount_paid float8;
 begin
-	insert into log (origin, message) values ('create_payment_for_open_ended_loan', 'start');
+	perform create_debug_log_entry('create_payment_for_open_ended_loan', 'start');
 
 	-- Insert payment 
 	insert into payments (client_id, loan_id, loan_statement_id, interest_amount_paid, principal_amount_paid, pay_date, receipt_image_url)
@@ -15,9 +15,10 @@ begin
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
 
-	insert into log (origin, message) values ('create_payment_for_open_ended_loan', 'end');	
+	perform create_debug_log_entry('create_payment_for_open_ended_loan', 'end');
 EXCEPTION
 	WHEN OTHERS THEN
+		perform create_exception_log_entry('create_payment_for_open_ended_loan', SQLERRM);
     	RAISE EXCEPTION 'create_payment_for_zero_interest_loan - ERROR: %', SQLERRM;
 end;
 $$ LANGUAGE plpgsql;

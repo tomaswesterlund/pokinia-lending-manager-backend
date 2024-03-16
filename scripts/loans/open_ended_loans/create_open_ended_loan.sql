@@ -1,4 +1,3 @@
-------------- create_open_ended_loan ----------
 create or replace function create_open_ended_loan(v_client_id UUID, v_start_date date, v_payment_period text, v_initial_principal_amount float8, v_interest_rate float8)
 returns void as $$
 declare 
@@ -6,7 +5,7 @@ declare
 	v_loan_statement_id uuid;
 	v_expected_pay_date date;
 begin
-	insert into log (origin, message) values ('create_open_ended_loan', 'start');
+	perform create_debug_log_entry('create_open_ended_loan', 'start');
 
 	-- Create loans
 	insert into loans(client_id, payment_status, type) values (v_client_id, 'unknown', 'open_ended_loan')
@@ -46,11 +45,11 @@ begin
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
 
-	
-	insert into log (origin, message) values ('create_open_ended_loan', 'end');
+	perform create_debug_log_entry('create_open_ended_loan', 'end');
 	
 EXCEPTION
 	WHEN OTHERS THEN
+		perform create_exception_log_entry('create_open_ended_loan', SQLERRM);
     	RAISE EXCEPTION 'create_open_ended_loan - ERROR: %', SQLERRM;
 end;
 $$ LANGUAGE plpgsql;

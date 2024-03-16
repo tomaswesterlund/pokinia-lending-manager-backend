@@ -5,11 +5,10 @@ declare
 	v_client_id uuid;
 	v_initial_principal_amount float8;
 begin
-	insert into log (origin, message) values ('edit_open_ended_loan', 'start');
-	
-	insert into log (origin, message) values ('edit_open_ended_loan', 'v_loan_id: ' || v_loan_id);
-	insert into log (origin, message) values ('edit_open_ended_loan', 'v_interest_rate: ' || v_interest_rate);	
-	insert into log (origin, message) values ('edit_open_ended_loan', 'v_payment_statuses: ' || array_to_string(v_payment_statuses, ', '));
+	perform create_debug_log_entry('edit_open_ended_loan', 'start');
+	perform create_debug_log_entry('edit_open_ended_loan', 'v_loan_id: ' || v_loan_id);
+	perform create_debug_log_entry('edit_open_ended_loan', 'v_interest_rate: ' || v_interest_rate);
+	perform create_debug_log_entry('edit_open_ended_loan', 'v_payment_statuses: ' || array_to_string(v_payment_statuses, ', '));
 
 	-- Delcare variables
 	select client_id
@@ -22,8 +21,8 @@ begin
 	from open_ended_loans
 	where loan_id = v_loan_id;
 
-	insert into log (origin, message) values ('edit_open_ended_loan', 'v_client_id:' || v_client_id);
-	insert into log (origin, message) values ('edit_open_ended_loan', 'v_initial_principal_amount:' || v_initial_principal_amount);
+	perform create_debug_log_entry('edit_open_ended_loan', 'v_client_id:' || v_client_id);
+	perform create_debug_log_entry('edit_open_ended_loan', 'v_initial_principal_amount:' || v_initial_principal_amount);
 
 	-- Update interest rate in loan
 	update open_ended_loans  
@@ -45,10 +44,10 @@ begin
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
 
-	insert into log (origin, message) values ('edit_open_ended_loan', 'end');	
-
+	perform create_debug_log_entry('edit_open_ended_loan', 'end');
 EXCEPTION
 	WHEN OTHERS THEN
+		perform create_exception_log_entry('edit_open_ended_loan', SQLERRM);
     	RAISE EXCEPTION 'edit_open_ended_loan - ERROR: %', SQLERRM;
 end;
 $$ LANGUAGE plpgsql;

@@ -6,7 +6,7 @@ declare
 	v_interest_amount_paid float8;
 	v_principal_amount_paid float8;
 begin
-	insert into log (origin, message) values ('calculate_loan_values', 'start');
+	perform create_debug_log_entry('calculate_loan_values', 'start');
 
 	-- Get variables
 	select type
@@ -15,7 +15,7 @@ begin
 	where id = v_loan_id;
 
 	if v_loan_type = 'open_ended_loan' then
-		insert into log (origin, message) values ('calculate_loan_values', 'open_ended_loan');
+		perform create_debug_log_entry('calculate_loan_values', 'open_ended_loan');
 	
 		-- Update principal_amount_paid and interest_amount_paid
 		select sum(interest_amount_paid), sum(principal_amount_paid)
@@ -31,10 +31,10 @@ begin
 		set interest_amount_paid = v_interest_amount_paid, principal_amount_paid = v_principal_amount_paid
 		where loan_id = v_loan_id;
 	
-		insert into log (origin, message) values ('calculate_loan_values', 'v_interest_amount_paid:' || v_interest_amount_paid);
-		insert into log (origin, message) values ('calculate_loan_values', 'v_principal_amount_paid:' || v_principal_amount_paid);
+		perform create_debug_log_entry('calculate_loan_values', 'v_interest_amount_paid:' || v_interest_amount_paid);
+		perform create_debug_log_entry('calculate_loan_values', 'v_principal_amount_paid:' || v_principal_amount_paid);
 	elseif v_loan_type = 'zero_interest_loan' then
-		insert into log (origin, message) values ('calculate_loan_values', 'zero_interest_loan');
+		perform create_debug_log_entry('calculate_loan_values', 'zero_interest_loan');
 	
 		select sum(principal_amount_paid)
 		into v_principal_amount_paid
@@ -49,7 +49,7 @@ begin
 		set principal_amount_paid = v_principal_amount_paid
 		where loan_id = v_loan_id;
 	
-		insert into log (origin, message) values ('calculate_loan_values', 'v_principal_amount_paid:' || v_principal_amount_paid); 
+		perform create_debug_log_entry('calculate_loan_values', 'v_principal_amount_paid:' || v_principal_amount_paid);
 	else 
 		RAISE exception 'calculate_loan_values - Unknown v_loan_type: %', v_loan_type;
 	end if;
@@ -57,9 +57,10 @@ begin
 	-- Update payment status
 	perform update_loan_payment_status(v_loan_id);
  	
-	insert into log (origin, message) values ('calculate_loan_values', 'end');
+	perform create_debug_log_entry('calculate_loan_values', 'end');
 EXCEPTION
     WHEN OTHERS THEN
+		perform create_exception_log_entry('calculate_loan_values', SQLERRM);
         RAISE exception 'calculate_loan_values - ERROR: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;

@@ -15,9 +15,9 @@ declare
 	v_remaining_interest_amount_to_be_paid float8;
 	v_remaining_principal_amount_to_be_paid float8;
 begin
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'start');
+	perform create_debug_log_entry('calculate_loan_statement_values', 'start');
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_loan_statement_id: ' || v_loan_statement_id);
 
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_loan_statement_id:' || v_loan_statement_id);
 	perform check_loan_statement_exists(v_loan_statement_id);
 
 	-- Is deleted
@@ -76,19 +76,19 @@ begin
 		payment_status = v_payment_status
 	where id = v_loan_statement_id;
 
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_payment_status: ' || v_payment_status);
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_interest_amount_paid: ' || coalesce(v_interest_amount_paid, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_principal_amount_paid: ' || coalesce(v_principal_amount_paid, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_expected_interest_amount: ' || coalesce(v_expected_interest_amount, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_expected_principal_amount: ' || coalesce(v_expected_principal_amount, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_expected_pay_date: ' || coalesce(v_expected_pay_date, '1990-01-01'));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_remaining_interest_amount_to_be_paid: ' || coalesce(v_remaining_interest_amount_to_be_paid, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_remaining_principal_amount_to_be_paid: ' || coalesce(v_remaining_principal_amount_to_be_paid, -1));
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'v_remaining_amount_to_be_paid: ' || coalesce(v_remaining_amount_to_be_paid, -1));
-
-	insert into log (origin, message) values ('calculate_loan_statement_values', 'end');
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_payment_status: ' || v_payment_status);
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_interest_amount_paid: ' || coalesce(v_interest_amount_paid, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_principal_amount_paid: ' || coalesce(v_principal_amount_paid, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_expected_interest_amount: ' || coalesce(v_expected_interest_amount, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_expected_principal_amount: ' || coalesce(v_expected_principal_amount, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_expected_pay_date: ' || coalesce(v_expected_pay_date, '1990-01-01'));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_remaining_interest_amount_to_be_paid: ' || coalesce(v_remaining_interest_amount_to_be_paid, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_remaining_principal_amount_to_be_paid: ' || coalesce(v_remaining_principal_amount_to_be_paid, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'v_remaining_amount_to_be_paid: ' || coalesce(v_remaining_amount_to_be_paid, -1));
+	perform create_debug_log_entry('calculate_loan_statement_values', 'end');
 EXCEPTION
     WHEN OTHERS THEN
+		perform create_exception_log_entry('calculate_loan_statement_values', SQLERRM);
         RAISE EXCEPTION 'calculate_loan_statement_values - ERROR: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;

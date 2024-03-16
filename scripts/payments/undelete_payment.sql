@@ -5,14 +5,13 @@ declare
 	v_loan_id uuid;
 	v_loan_statement_id uuid;
 begin
-	insert into log (origin, message) values ('undelete_payment', 'start');
+	perform create_debug_log_entry('undelete_payment', 'v_payment_id: ' || v_payment_id);
 
 	-- Declare variables
 	SELECT client_id, loan_id, loan_statement_id
 	INTO v_client_id, v_loan_id, v_loan_statement_id
 	FROM payments
 	WHERE id = v_payment_id;
-
 
 	-- Update
 	UPDATE payments
@@ -27,11 +26,10 @@ begin
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
 
-
-	insert into log (origin, message) values ('undelete_payment', 'end');	
-
+	perform create_debug_log_entry('undelete_payment', 'end');
 EXCEPTION
 	WHEN OTHERS THEN
+		perform create_exception_log_entry('undelete_payment', SQLERRM);
     	RAISE EXCEPTION 'undelete_payment - ERROR: %', SQLERRM;
 end;
 $$ LANGUAGE plpgsql;

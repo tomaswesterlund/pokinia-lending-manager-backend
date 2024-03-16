@@ -1,5 +1,3 @@
-------------------------------------------------------------
-
 CREATE OR REPLACE FUNCTION update_client_payment_status(v_client_id UUID)
 RETURNS void AS $$
 declare 
@@ -7,7 +5,7 @@ declare
 	v_has_overdue BOOLEAN;
 	v_has_loans BOOLEAN;
 begin
-	insert into log (origin, message) values ('update_client_payment_status', 'start');
+	perform create_debug_log_entry('update_client_payment_status', 'start');
 
 	-- Get payment status
 	SELECT COUNT(*) > 0 INTO v_has_loans
@@ -29,16 +27,16 @@ begin
     	v_payment_status = 'empty';
     end if;
 	
-	
-	insert into log (origin, message) values ('update_client_payment_status', 'v_payment_status:' || v_payment_status);
+	perform create_debug_log_entry('update_client_payment_status', 'v_payment_status:' || v_payment_status);
 
 	update clients 
 	set payment_status = v_payment_status
 	where id = v_client_id;
 
-	insert into log (origin, message) values ('update_client_payment_status', 'end');
+	perform create_debug_log_entry('update_client_payment_status', 'end');
 EXCEPTION
     WHEN OTHERS THEN
+		perform create_exception_log_entry('update_client_payment_status', SQLERRM);
         RAISE EXCEPTION 'An unexpected error occurred: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
