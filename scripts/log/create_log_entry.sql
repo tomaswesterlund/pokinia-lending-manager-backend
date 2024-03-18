@@ -4,7 +4,7 @@ declare
 	v_user_id UUID;
 begin
     -- Get username
-    SELECT current_setting('request.jwt.claim.sub') INTO v_user_id;
+    -- SELECT current_setting('request.jwt.claim.sub') INTO v_user_id;
 
     -- Insert into log
     insert into log (source, severity, method_name, description, user_id)

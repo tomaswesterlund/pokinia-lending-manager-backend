@@ -1,4 +1,4 @@
-create or replace function create_payment_for_zero_interest_loan(v_client_id UUID, v_loan_id UUID, v_principal_amount_paid float8, v_pay_date date, v_receipt_image_url text)
+create or replace function create_payment_for_zero_interest_loan(v_client_id UUID, v_loan_id UUID, v_principal_amount_paid float8, v_pay_date date, v_receipt_image_url text, v_description)
 returns void as $$
 declare 
 	v_initial_principal_amount float8;
@@ -16,8 +16,8 @@ begin
 	where loan_id = v_loan_id;
 	
 	-- Insert into payments
-	insert into payments (client_id, loan_id, interest_amount_paid, principal_amount_paid, pay_date, receipt_image_url)
-	values (v_client_id, v_loan_id, 0, v_principal_amount_paid, v_pay_date, v_receipt_image_url);
+	insert into payments (client_id, loan_id, interest_amount_paid, principal_amount_paid, pay_date, receipt_image_url, description)
+	values (v_client_id, v_loan_id, 0, v_principal_amount_paid, v_pay_date, v_receipt_image_url, v_description);
 
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
