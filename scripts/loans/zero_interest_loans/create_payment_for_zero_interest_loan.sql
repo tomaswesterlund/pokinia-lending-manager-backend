@@ -1,4 +1,4 @@
-create or replace function create_payment_for_zero_interest_loan(v_client_id UUID, v_loan_id UUID, v_principal_amount_paid float8, v_pay_date date, v_receipt_image_url text, v_description)
+create or replace function create_payment_for_zero_interest_loan(v_client_id UUID, v_loan_id UUID, v_principal_amount_paid float8, v_pay_date date, v_receipt_image_url text, v_description text)
 returns void as $$
 declare 
 	v_initial_principal_amount float8;

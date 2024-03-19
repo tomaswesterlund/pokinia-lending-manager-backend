@@ -1,8 +1,7 @@
 create or replace function create_payment_for_open_ended_loan(v_client_id UUID, v_loan_id UUID, v_loan_statement_id UUID, v_interest_amount_paid float8, v_principal_amount_paid float8, v_pay_date date, v_receipt_image_url text, v_description text)
 returns void as $$
-declare 
-	v_total_interest_amount_paid float8;
-	v_total_principal_amount_paid float8;
+declare
+	loan_statement_record RECORD;
 begin
 	perform create_debug_log_entry('create_payment_for_open_ended_loan', 'start');
 
@@ -14,6 +13,8 @@ begin
 	perform calculate_loan_statement_values(v_loan_statement_id);
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
+
+	PERFORM calculate_expected_interest_amount_for_loan(v_loan_id);
 
 	perform create_debug_log_entry('create_payment_for_open_ended_loan', 'end');
 EXCEPTION

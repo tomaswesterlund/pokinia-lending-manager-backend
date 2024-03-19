@@ -22,8 +22,11 @@ begin
 	if v_loan_statement_id is not null then -- Needed for Zero Interest Loan
 		perform calculate_loan_statement_values(v_loan_statement_id);
 	end if;
+
 	perform calculate_loan_values(v_loan_id);
 	perform calculate_client_values(v_client_id);
+
+	PERFORM calculate_expected_interest_amount_for_loan(v_loan_id);
 
 	perform create_debug_log_entry('delete_payment', 'end');
 EXCEPTION
