@@ -12,7 +12,7 @@ begin
     select user_exists(v_user_id) into v_user_id_exists;
 
     if not v_user_id_exists then
-        insert into users (id) values (v_user_id);
+        insert into users (user_id) values (v_user_id);
     end if;
 
 
