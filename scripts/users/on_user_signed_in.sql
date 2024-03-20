@@ -1,11 +1,20 @@
 create or replace function on_user_signed_in(v_user_id uuid)
 returns void as $$
 declare
+    v_user_id_exists boolean;
     v_user_settings_id uuid;
     v_organzation_id uuid;
 begin
 	perform create_debug_log_entry('on_user_logged_in', 'start');
     perform create_debug_log_entry('on_user_logged_in', 'v_user_id: ' || v_user_id);
+
+    -- Check if user_id exists in users table
+    select user_exists(v_user_id) into v_user_id_exists;
+
+    if not v_user_id_exists then
+        insert into users (id) values (v_user_id);
+    end if;
+
 
     -- Get user_settings_id
     select id into v_user_settings_id from user_settings where user_id = v_user_id;
