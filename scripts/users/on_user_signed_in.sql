@@ -32,8 +32,9 @@ begin
     end if;
 
     -- Insert default organization settings
-    PERFORM insert_organization_settings_if_not_exists(v_organzation_id, 'CEIAFL01', 'true');
-    PERFORM insert_organization_settings_if_not_exists(v_organzation_id, 'CEIAFL02', 'false');
+    PERFORM insert_organization_settings_if_not_exists(v_organzation_id, 'CEIAFL_SCHEDULED', 'true');
+    PERFORM insert_organization_settings_if_not_exists(v_organzation_id, 'CEIAFL_OVERDUE', 'false');
+    PERFORM insert_organization_settings_if_not_exists(v_organzation_id, 'DEFAULT_CURRENCY', 'USD');
 	
 	perform create_debug_log_entry('on_user_logged_in', 'end');
 EXCEPTION
